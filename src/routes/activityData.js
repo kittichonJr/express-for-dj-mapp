@@ -31,16 +31,37 @@ router.post('/', async (req, res, next)=>{
     console.log('body',body)
     const newReccord = new DataModel(body);
     const error = newReccord.validateSync();
-    console.log('error',error)
     if (error) {
         const errorFieldNames = Object.keys(error.errors);
         if (errorFieldNames.length >0 ){
             return res.status(400).send(error.errors[errorFieldNames[0]].message);
         }
     }
-    res.send('you can saved')
     // Save
     await newReccord.save();
+    res.status(201).send('create success')
+})
+router.put('/:id',async (req, res, next)=>{
+    const foundedId = req.record._id;
+    const body = req.body;
+    await DataModel.findByIdAndUpdate({_id:foundedId},body,{runValidators: true})
+    .then(()=>{
+        res.status(201).send('update success')
+    })
+    .catch((err)=>{
+            const errorFieldNames = Object.keys(err.errors);
+            if (errorFieldNames.length >0 ){
+                return res.status(400).send(err.errors[errorFieldNames[0]].message);
+            }
+    })
+
+})
+router.delete('/:id', async (req, res, next)=>{
+    const foundedId = req.record._id;
+    await DataModel.findByIdAndDelete({_id:foundedId})
+    .then(()=>{
+        res.status(200).send('delete success')
+    })
 })
 
 module.exports = router;
