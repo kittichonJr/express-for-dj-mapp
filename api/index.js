@@ -21,5 +21,8 @@ app.use(
     })
   );
 app.use('/users', userRouter);
+app.get('/',(req,res,next)=>{
+    return res.send('hi! how are you ?')
+})
 
 module.exports = app;
